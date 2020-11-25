@@ -20,6 +20,8 @@ public class Main {
 
         int[][] result = grafo.gerarMatrizAdjacencias();
 
+        grafo.gerarArquivoPajek("result.txt");
+
         for(int[] i: result){
             for(int j: i){
                 System.out.print(j + ",\t");

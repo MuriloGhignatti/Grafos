@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -5,6 +6,7 @@ import java.util.HashMap;
 public class Grafo<T> {
 
     private HashMap<T, Vertice<T>> vertices;
+    private boolean direcionado;
 
     private enum Resultado{
         Vertice1NaoPresente,
@@ -12,16 +14,25 @@ public class Grafo<T> {
         VerticesPresentes,
     }
 
+    public Grafo(HashMap<T, Vertice<T>> vertices, boolean direcionado){
+        this.vertices = vertices;
+        this.direcionado = direcionado;
+    }
+
     public Grafo(HashMap<T, Vertice<T>> toCopy){
-        this.vertices = toCopy;
+        this(toCopy, false);
     }
 
     public Grafo(Grafo<T> toCopy){
-        this.vertices = toCopy.vertices;
+        this(toCopy.vertices, toCopy.direcionado);
+    }
+
+    public Grafo(boolean direcionado){
+        this(new HashMap<>(), direcionado);
     }
 
     public Grafo(){
-        this.vertices = new HashMap<>();
+        this(new HashMap<>(), false);
     }
 
     private Resultado verticesExistem(T vertice1, T vertice2){
@@ -113,129 +124,299 @@ public class Grafo<T> {
 
     public void criaAdjacencia(T vertice1, T vertice2, int p, String rotulo){
         switch (verticesExistem(vertice1, vertice2)){
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).addAresta(new Aresta<T>(vertices.get(vertice2), p, rotulo));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+                break;
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+                break;
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).addAresta(new Aresta<T>(vertices.get(vertice2), p, rotulo));
+                else{
+                    vertices.get(vertice1).addAresta(new Aresta<T>(vertices.get(vertice2), p, rotulo));
+                    vertices.get(vertice2).addAresta(new Aresta<T>(vertices.get(vertice1), p, rotulo));
+                }
+                break;
         }
     }
 
     public void criaAdjacencia(T vertice1, T vertice2, int p){
         switch (verticesExistem(vertice1, vertice2)) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2), p));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2), p));
+                else{
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2), p));
+                    vertices.get(vertice2).addAresta(new Aresta(vertices.get(vertice1), p));
+                }
         }
     }
 
     public void criaAdjacencia(T vertice1, T vertice2){
         switch (verticesExistem(vertice1, vertice2)) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2)));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2)));
+                else{
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2)));
+                    vertices.get(vertice2).addAresta(new Aresta(vertices.get(vertice1)));
+                }
         }
     }
 
     public void criaAdjacencia(Vertice<T> vertice1, Vertice<T> vertice2, int p, String rotulo){
         switch (verticesExistem(vertice1.getInfo(), vertice2.getInfo())) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertice2, p, rotulo));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p, rotulo));
+                else{
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p, rotulo));
+                    vertices.get(vertice2.getInfo()).addAresta(new Aresta(vertices.get(vertice1.getInfo()), p, rotulo));
+                }
         }
     }
 
     public void criaAdjacencia(Vertice<T> vertice1, Vertice<T> vertice2, int p){
         switch (verticesExistem(vertice1.getInfo(), vertice2.getInfo())) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertice2, p));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p));
+                else{
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p));
+                    vertices.get(vertice2.getInfo()).addAresta(new Aresta(vertices.get(vertice1.getInfo()), p));
+                }
         }
     }
 
     public void criaAdjacencia(Vertice<T> vertice1, Vertice<T> vertice2){
         switch (verticesExistem(vertice1.getInfo(), vertice2.getInfo())) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertice2));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2.getInfo())));
+                else{
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2.getInfo())));
+                    vertices.get(vertice2.getInfo()).addAresta(new Aresta(vertices.get(vertice1.getInfo())));
+                }
         }
     }
 
     public void criaAdjacencia(T vertice1, Vertice<T> vertice2, int p, String rotulo){
         switch (verticesExistem(vertice1, vertice2.getInfo())) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).addAresta(new Aresta(vertice2, p, rotulo));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p, rotulo));
+                else{
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p, rotulo));
+                    vertices.get(vertice2.getInfo()).addAresta(new Aresta(vertices.get(vertice1), p, rotulo));
+                }
         }
     }
 
     public void criaAdjacencia(T vertice1, Vertice<T> vertice2, int p){
         switch (verticesExistem(vertice1, vertice2.getInfo())) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).addAresta(new Aresta(vertice2, p));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p));
+                else{
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2.getInfo()), p));
+                    vertices.get(vertice2.getInfo()).addAresta(new Aresta(vertices.get(vertice1), p));
+                }
         }
     }
 
     public void criaAdjacencia(T vertice1, Vertice<T> vertice2){
         switch (verticesExistem(vertice1, vertice2.getInfo())) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).addAresta(new Aresta(vertice2));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2.getInfo())));
+                else{
+                    vertices.get(vertice1).addAresta(new Aresta(vertices.get(vertice2.getInfo())));
+                    vertices.get(vertice2.getInfo()).addAresta(new Aresta(vertices.get(vertice1)));
+                }
         }
     }
 
     public void criaAdjacencia(Vertice<T> vertice1, T vertice2, int p, String rotulo){
         switch (verticesExistem(vertice1.getInfo(), vertice2)) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2), p, rotulo));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2), p, rotulo));
+                else{
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2), p, rotulo));
+                    vertices.get(vertice2).addAresta(new Aresta(vertices.get(vertice1.getInfo()), p, rotulo));
+                }
         }
     }
 
     public void criaAdjacencia(Vertice<T> vertice1, T vertice2, int p){
         switch (verticesExistem(vertice1.getInfo(), vertice2)) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2), p));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2), p));
+                else{
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2), p));
+                    vertices.get(vertice2).addAresta(new Aresta(vertices.get(vertice1.getInfo()), p));
+                }
         }
     }
 
     public void criaAdjacencia(Vertice<T> vertice1, T vertice2){
         switch (verticesExistem(vertice1.getInfo(), vertice2)) {
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2)));
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel criar adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel criar adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2)));
+                else{
+                    vertices.get(vertice1.getInfo()).addAresta(new Aresta(vertices.get(vertice2)));
+                    vertices.get(vertice2).addAresta(new Aresta(vertices.get(vertice1)));
+                }
         }
     }
 
     public void removeAdjacencia(Vertice<T> vertice1, Vertice<T> vertice2){
         switch (verticesExistem(vertice1.getInfo(), vertice2.getInfo())){
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).removeAresta(vertice2);
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).removeAresta(vertices.get(vertice2.getInfo()));
+                else{
+                    vertices.get(vertice1.getInfo()).removeAresta(vertices.get(vertice2.getInfo()));
+                    vertices.get(vertice2.getInfo()).removeAresta(vertices.get(vertice2.getInfo()));
+                }
         }
     }
 
     public void removeAdjacencia(Vertice<T> vertice1, T vertice2){
         switch (verticesExistem(vertice1.getInfo(), vertice2)){
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1.getInfo()).removeAresta(vertice2);
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1.getInfo()).removeAresta(vertice2);
+                else{
+                    vertices.get(vertice1.getInfo()).removeAresta(vertice2);
+                    vertices.get(vertice2).removeAresta(vertice1);
+                }
         }
     }
 
     public void removeAdjacencia(T vertice1, T vertice2){
         switch (verticesExistem(vertice1, vertice2)){
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).removeAresta(vertice2);
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).removeAresta(vertice2);
+                else{
+                    vertices.get(vertice1).removeAresta(vertice2);
+                    vertices.get(vertice2).removeAresta(vertice1);
+                }
         }
     }
 
     public void removeAdjacencia(T vertice1, Vertice<T> vertice2){
         switch (verticesExistem(vertice1, vertice2.getInfo())){
-            case Vertice1NaoPresente    -> System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
-            case Vertice2NaoPresente    -> System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
-            case VerticesPresentes      -> vertices.get(vertice1).removeAresta(vertice2);
+            case Vertice1NaoPresente:
+                System.err.println("Vertice: " + vertice1 + " não encontrado no grafo, impossivel remover adjacencia");
+            case Vertice2NaoPresente:
+                System.err.println("Vertice: " + vertice2 + " não encontrado no grafo, impossivel remover adjacencia");
+            case VerticesPresentes:
+                if(direcionado)
+                    vertices.get(vertice1).removeAresta(vertices.get(vertice2.getInfo()));
+                else{
+                    vertices.get(vertice1).removeAresta(vertices.get(vertice2.getInfo()));
+                    vertices.get(vertice2.getInfo()).removeAresta(vertice1);
+                }
+        }
+    }
+
+    public void gerarArquivoPajek(String path){
+        File file = new File(path.endsWith(".txt") ? path : path + ".txt");
+        FileWriter fileWriter = null;
+        BufferedWriter bufferedWriter = null;
+        try{
+            fileWriter = new FileWriter(file);
+            bufferedWriter = new BufferedWriter(fileWriter);
+
+            bufferedWriter.write("*Vertices " + vertices.size() + '\n');
+            for(Vertice<T> v: vertices.values()){
+                bufferedWriter.write(v.getInfo() + "\"" + v.getRotulo() + "\"" + "\n");
+            }
+
+            if(direcionado)
+                bufferedWriter.write("*Arcs" + "\n");
+            else
+                bufferedWriter.write("*Edges" + "\n");
+
+            for(Vertice<T> v: vertices.values()){
+                for(Aresta<T> a: v.getArestas()){
+                    bufferedWriter.write(v.getInfo() + " " + a.getInfo() + " " + a.getPeso() + "\n");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try{
+                if(fileWriter != null)
+                    fileWriter.close();
+                if(bufferedWriter != null)
+                    bufferedWriter.close();
+            }
+            catch (IOException e){
+
+            }
         }
     }
 }

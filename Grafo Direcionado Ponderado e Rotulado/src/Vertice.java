@@ -4,19 +4,29 @@ import java.util.HashMap;
 public class Vertice<T> {
 
     private T info;
+    private String rotulo;
     private HashMap<T, Aresta<T>> arestas;
 
-    public Vertice(T info, HashMap<T, Aresta<T>> arestas){
+    public Vertice(T info, HashMap<T, Aresta<T>> arestas, String rotulo){
         this.info = info;
         this.arestas = arestas;
+        this.rotulo = rotulo;
+    }
+
+    public Vertice(T info, HashMap<T, Aresta<T>> arestas){
+        this(info, arestas, "");
     }
 
     public Vertice(T info){
-        this(info, null);
+        this(info, null, "");
+    }
+
+    public Vertice(T info, String rotulo){
+        this(info, null, "");
     }
 
     public Vertice(Vertice<T> toCopy){
-        this(toCopy.info, toCopy.arestas);
+        this(toCopy.info, toCopy.arestas, toCopy.rotulo);
     }
 
     public void setInfo(T info) {
@@ -25,6 +35,14 @@ public class Vertice<T> {
 
     public T getInfo() {
         return info;
+    }
+
+    public String getRotulo() {
+        return rotulo;
+    }
+
+    public void setRotulo(String rotulo) {
+        this.rotulo = rotulo;
     }
 
     public void addAresta(Aresta<T> aresta){
