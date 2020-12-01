@@ -1,0 +1,8 @@
+*Vertices 3
+Joao"teste"
+Rafael"teste2"
+Murilo
+*Arcs
+Joao Rafael 2
+Rafael Murilo 4
+Murilo Joao 3

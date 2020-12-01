@@ -1,0 +1,14 @@
+*Vertices 4
+Joao"teste"
+Arthur
+Rafael"teste2"
+Murilo
+*Edges
+Joao Rafael 2
+Joao Murilo 3
+Arthur Murilo 1
+Rafael Joao 2
+Rafael Murilo 5
+Murilo Joao 3
+Murilo Arthur 1
+Murilo Rafael 5

@@ -5,12 +5,14 @@ public class Vertice<T> {
 
     private T info;
     private String rotulo;
+    private Integer distanciaDaRaiz;
     private HashMap<T, Aresta<T>> arestas;
 
     public Vertice(T info, HashMap<T, Aresta<T>> arestas, String rotulo){
         this.info = info;
         this.arestas = arestas;
         this.rotulo = rotulo;
+        this.distanciaDaRaiz = Integer.MAX_VALUE;
     }
 
     public Vertice(T info, HashMap<T, Aresta<T>> arestas){
@@ -22,7 +24,7 @@ public class Vertice<T> {
     }
 
     public Vertice(T info, String rotulo){
-        this(info, null, "");
+        this(info, null, rotulo);
     }
 
     public Vertice(Vertice<T> toCopy){
@@ -84,7 +86,7 @@ public class Vertice<T> {
             arestas.remove(info);
     }
 
-    public int existeAdjacencia(T info){
+    public double existeAdjacencia(T info){
         if(arestas != null) {
             Aresta<T> result = arestas.get(info);
             if(result != null)
@@ -93,13 +95,13 @@ public class Vertice<T> {
         return Integer.MIN_VALUE;
     }
 
-    public int existeAdjacencia(Vertice<T> vertice){
+    public double existeAdjacencia(Vertice<T> vertice){
         if(arestas != null) {
             Aresta<T> result = arestas.get(vertice.getInfo());
             if(result != null)
                 return result.getPeso();
         }
-        return Integer.MIN_VALUE;
+        return Double.MIN_VALUE;
     }
 
     public Collection<Aresta<T>> getArestas(){
@@ -113,5 +115,9 @@ public class Vertice<T> {
             for(Aresta adjacencia: arestas.values()){
                 System.out.println(this.info + "->" + adjacencia.getInfo());
             }
+    }
+
+    public boolean arestaIsEmpty(){
+        return arestas == null || arestas.size() == 0;
     }
 }

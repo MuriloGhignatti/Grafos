@@ -1,15 +1,15 @@
 public class Aresta<T> {
 
     private Vertice<T> vertice;
-    private int peso;
+    private double peso;
 
 
-    public Aresta(Vertice<T> vertice, int peso, String rotulo){
+    public Aresta(Vertice<T> vertice, double peso, String rotulo){
         this.vertice = vertice;
         this.peso = peso;
     }
 
-    public Aresta(Vertice<T> vertice, int peso){
+    public Aresta(Vertice<T> vertice, double peso){
         this(vertice, peso, null);
     }
 
@@ -25,7 +25,7 @@ public class Aresta<T> {
         return vertice;
     }
 
-    public int getPeso() {
+    public double getPeso() {
         return peso;
     }
 
